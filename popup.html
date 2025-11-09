@@ -1,0 +1,314 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>VeriCura</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #0f3f41; /* teal-ish base instead of dark green */
+        color: #fff;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      /* popup shell */
+      .popup {
+        width: 360px;
+        padding: 14px 14px 16px 14px;
+      }
+
+      .header {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .icon-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(120, 255, 220, 0.25);
+      }
+
+      .title {
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        font-size: 0.68rem;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      /* scan bar: make border more teal */
+      .scan-shell {
+        background: linear-gradient(90deg, #7ff0d8, #5dd5bf, #3fb6a5);
+        border-radius: 20px;
+        padding: 2px;
+        margin-bottom: 12px;
+      }
+
+      .scan-btn {
+        width: 100%;
+        border: none;
+        background: #0f3f41; /* match body */
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border-radius: 18px;
+        padding: 11px 14px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.12s ease-out;
+      }
+
+      .scan-btn:hover {
+        background: rgba(245, 255, 251, 0.04);
+      }
+
+      .play {
+        font-size: 0.75rem;
+      }
+
+      /* info row stays dark, but nudge to teal */
+      .info-row {
+        background: rgba(2, 27, 30, 0.35);
+        border: 1px solid rgba(210, 242, 226, 0.02);
+        border-radius: 16px;
+        padding: 10px 12px;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 0.75rem;
+        color: rgba(231, 247, 238, 0.75);
+        margin-top: 8px;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .info-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 999px;
+        border: 1.2px solid rgba(231, 247, 238, 0.35);
+        display: grid;
+        place-items: center;
+        font-size: 0.65rem;
+        color: rgba(231, 247, 238, 0.6);
+      }
+
+      .tooltip {
+        position: absolute;
+        top: -115px;
+        left: 0;
+        width: 100%;
+        background: #0c3335;
+        border: 1px solid rgba(231, 247, 238, 0.08);
+        border-radius: 16px;
+        padding: 10px 12px;
+        font-size: 0.7rem;
+        line-height: 1.35;
+        display: none;
+        z-index: 10;
+      }
+
+      .info-row:hover .tooltip {
+        display: block;
+      }
+
+      #result {
+        margin-top: 12px;
+      }
+
+      .result-card {
+        background: rgba(2, 30, 31, 0.45); /* teal-tinted */
+        border: 1px solid rgba(232, 246, 239, 0.03);
+        border-radius: 16px;
+        padding: 10px 12px 12px 12px;
+        position: relative;
+      }
+
+      .score-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .score-left {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .score-val {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .score-sub {
+        font-size: 0.63rem;
+        opacity: 0.55;
+        max-width: 210px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* pill stays same but we could make base a bit more teal-brown if you want */
+      .status-pill {
+        padding: 7px 18px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(122, 87, 78, 1);
+        color: #fff;
+        margin-bottom: 4px;
+        position: absolute;
+        top: 10px;
+        right: 12px;
+      }
+
+      .status-good {
+        background: rgba(3, 153, 90, 0.85);
+      }
+
+      .status-mid {
+        background: rgba(236, 188, 79, 0.9);
+        color: #fff3db;
+      }
+
+      .ai-badge {
+        background: rgba(228, 255, 245, 0.08);
+        border: 1px solid rgba(228, 255, 245, 0.08);
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-size: 0.55rem;
+        max-width: fit-content;
+        margin-top: 4px;
+        display: none;
+      }
+
+      .ai-badge.show {
+        display: inline-flex;
+      }
+
+      .progress-wrap {
+        margin-top: 10px;
+      }
+
+      .progress-track {
+        height: 5px;
+        background: rgba(230, 245, 237, 0.04);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #7ff0d8, #f6d67a);
+        transition: width 0.35s ease-out;
+      }
+
+      .issues-label {
+        margin-top: 10px;
+        font-size: 0.66rem;
+        opacity: 0.7;
+      }
+
+      /* KEEP red/green accents */
+      .factor-card {
+        background: rgba(6, 44, 46, 0.25);
+        border: 1px solid rgba(232, 246, 239, 0.02);
+        border-radius: 10px;
+        padding: 6px 8px 6px 8px;
+        margin-top: 5px;
+        width: 100%;
+        cursor: pointer;
+      }
+
+      .factor-title {
+        font-size: 0.68rem;
+        font-weight: 600;
+      }
+
+      .factor-desc {
+        font-size: 0.62rem;
+        color: rgba(231, 247, 238, 0.5);
+        margin-top: 2px;
+      }
+
+      .factor-pos {
+        border-left: 3px solid #6dd7ac; /* keep green */
+      }
+
+      .factor-neg {
+        border-left: 3px solid #ff4b4b; /* keep red */
+        background: rgba(255, 75, 75, 0.02);
+      }
+
+      .accurate-btn {
+        margin-top: 10px;
+        width: 100%;
+        background: rgba(6, 44, 46, 0.35);
+        border: 1px solid rgba(231, 247, 238, 0.03);
+        border-radius: 14px;
+        color: rgba(231, 247, 238, 0.85);
+        font-size: 0.7rem;
+        padding: 7px 10px;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .accurate-btn:hover {
+        filter: brightness(1.02);
+        transform: translateY(-1px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="popup">
+      <header class="header">
+        <img src="icon.png" alt="VeriCura logo" class="icon-img" />
+        <div>
+         <div class="title">VeriCura</div>
+         <div class="subtitle">Care begins with truth</div>
+        </div>
+        </header>
+
+      <div class="scan-shell">
+        <button id="scanBtn" class="scan-btn">
+          <span class="play">▶</span>
+          <span>Scan this Page</span>
+        </button>
+      </div>
+
+      <div class="info-row" id="infoRow">
+        <span class="info-icon">?</span>
+        <span>What's this?</span>
+        <div class="tooltip" id="infoTooltip">
+          VeriCura scans the current page for medical credibility signals (sources, author, risky language) and estimates a reliability score.
+        </div>
+      </div>
+
+      <div id="result"></div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
