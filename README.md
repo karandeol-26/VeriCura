@@ -3,7 +3,7 @@
 ![Static Badge](https://img.shields.io/badge/css-5573ed)\
 🧠 Powered by xAI Grok-3 • 🩺 Built for Health Information Integrity
 
-# CuraRx
+# VeriCura
 
 A Chrome extension that detects medical misinformation, verifies online health articles, and provides AI-driven credibility analysis to help users navigate health content safely.
 
@@ -21,7 +21,7 @@ Common misinformation patterns include:
 
 ## The Solution
 
-CuraRx acts as your **personal fact-checker for health information**.  
+VeriCura acts as your **personal fact-checker for health information**.  
 It scans web pages in real time, analyzes credibility based on trusted medical criteria, and integrates with xAI’s Grok-3 to cross-verify claims against reliable evidence from the CDC, NIH, and Mayo Clinic.
 
 ## Key Features
@@ -70,8 +70,8 @@ It scans web pages in real time, analyzes credibility based on trusted medical c
 1. Clone or download this repository  
 2. Open Chrome and go to `chrome://extensions/`  
 3. Enable **Developer mode** (top right corner)  
-4. Click **Load unpacked** and select the CuraRx directory  
-5. The CuraRx icon will appear in your toolbar  
+4. Click **Load unpacked** and select the VeriCura directory  
+5. The VeriCura icon will appear in your toolbar  
 
 ## Configuration
 
